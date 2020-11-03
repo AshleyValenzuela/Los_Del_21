@@ -10,6 +10,7 @@ export const Videos = () => {
   return (
     <div>
       <Navbar />
+      <h2>coming soon...</h2>
     </div>
   )
 }
