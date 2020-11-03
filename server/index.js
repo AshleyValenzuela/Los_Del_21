@@ -1,12 +1,15 @@
+const stripe = require('stripe')(
+  'sk_test_51HYi63FGeX5HICoqmq4bxp5WZxWOyx2RuKIow82nfuPwpINDsOQfrMWZeS0qac8Wj3kANIucbM2atXbyZa91QTek00nBiGJQFe'
+)
 const path = require('path')
 const express = require('express')
 const morgan = require('morgan')
 const compression = require('compression')
-const session = require('express-session')
-const passport = require('passport')
-const SequelizeStore = require('connect-session-sequelize')(session.Store)
-const db = require('./db')
-const sessionStore = new SequelizeStore({db})
+//const session = require('express-session')
+//const passport = require('passport')
+//const SequelizeStore = require('connect-session-sequelize')(session.Store)
+// const db = require('./db')
+// const sessionStore = new SequelizeStore({db})
 const PORT = process.env.PORT || 8080
 const app = express()
 const socketio = require('socket.io')
@@ -14,9 +17,7 @@ module.exports = app
 
 // This is a global Mocha hook, used for resource cleanup.
 // Otherwise, Mocha v4+ never quits after tests.
-if (process.env.NODE_ENV === 'test') {
-  after('close the session store', () => sessionStore.stopExpiringSessions())
-}
+// //
 
 /**
  * In your development environment, you can keep all of your
@@ -28,17 +29,17 @@ if (process.env.NODE_ENV === 'test') {
  */
 if (process.env.NODE_ENV !== 'production') require('../secrets')
 
-// passport registration
-passport.serializeUser((user, done) => done(null, user.id))
+// // passport registration
+// passport.serializeUser((user, done) => done(null, user.id))
 
-passport.deserializeUser(async (id, done) => {
-  try {
-    const user = await db.models.user.findByPk(id)
-    done(null, user)
-  } catch (err) {
-    done(err)
-  }
-})
+// passport.deserializeUser(async (id, done) => {
+//   try {
+//     const user = await db.models.user.findByPk(id)
+//     done(null, user)
+//   } catch (err) {
+//     done(err)
+//   }
+// })
 
 const createApp = () => {
   // logging middleware
@@ -51,25 +52,45 @@ const createApp = () => {
   // compression middleware
   app.use(compression())
 
-  // session middleware with passport
-  app.use(
-    session({
-      secret: process.env.SESSION_SECRET || 'my best friend is Cody',
-      store: sessionStore,
-      resave: false,
-      saveUninitialized: false
-    })
-  )
-  app.use(passport.initialize())
-  app.use(passport.session())
+  // // session middleware with passport
+  // app.use(
+  //   session({
+  //     secret: process.env.SESSION_SECRET || 'my best friend is Cody',
+  //     store: sessionStore,
+  //     resave: false,
+  //     saveUninitialized: false
+  //   })
+  // )
+  // app.use(passport.initialize())
+  // app.use(passport.session())
 
   // auth and api routes
-  app.use('/auth', require('./auth'))
-  app.use('/api', require('./api'))
+  // app.use('/auth', require('./auth'))
+  app.use('/spotify', require('./spotify'))
 
   // static file-serving middleware
   app.use(express.static(path.join(__dirname, '..', 'public')))
 
+  const calculateOrderAmount = items => {
+    // Replace this constant with a calculation of the order's amount
+    // Calculate the order total on the server to prevent
+    // people from directly manipulating the amount on the client
+    if (items) {
+      return 100
+    }
+  }
+
+  app.post('/create-payment-intent', async (req, res) => {
+    const {items} = req.body
+    // Create a PaymentIntent with the order amount and currency
+    const paymentIntent = await stripe.paymentIntents.create({
+      amount: calculateOrderAmount(items),
+      currency: 'usd'
+    })
+    res.send({
+      clientSecret: paymentIntent.client_secret
+    })
+  })
   // any remaining requests with an extension (.js, .css, etc.) send 404
   app.use((req, res, next) => {
     if (path.extname(req.path).length) {
@@ -105,11 +126,11 @@ const startListening = () => {
   require('./socket')(io)
 }
 
-const syncDb = () => db.sync()
+//const syncDb = () => db.sync()
 
 async function bootApp() {
-  await sessionStore.sync()
-  await syncDb()
+  // await sessionStore.sync()
+  // await syncDb()
   await createApp()
   await startListening()
 }

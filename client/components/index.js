@@ -4,5 +4,13 @@
  * having to figure out which file they belong to!
  */
 export {default as Navbar} from './navbar'
-export {default as UserHome} from './user-home'
-export {Login, Signup} from './auth-form'
+export {default as VideoHome} from './videoHome'
+export {default as Home} from './home'
+export {default as About} from './about'
+export {default as BuyTickets} from './buytickets'
+export {default as Merchandise} from './merchandise'
+export {default as Music} from './music'
+export {default as Videos} from './videos'
+export {default as FailPurchase} from './failedPurchase'
+export {default as SuccessPurchase} from './successfulPurchase'
+export {default as CheckoutForm} from './checkoutForm'
