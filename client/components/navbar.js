@@ -5,7 +5,7 @@ import {NavLink} from 'react-router-dom'
 const Navbar = () => (
   <div id="nav-color">
     <div>
-      <img id="home-image" src="http://localhost:8080/losdel21.JPG" />
+      <img id="home-image" src="https://losdel21.herokuapp.com/losdel21.JPG" />
     </div>
     <nav className="text-link">
       <NavLink to="/home">Home</NavLink>
