@@ -13,7 +13,6 @@ const Home = () => {
       <h3>August 2020 Release</h3>
       <h3>Live from Coachella, California</h3>
       <h3>Now on Spotify</h3>
-      <img id="home-image" src="https://losdel21.herokuapp.com/album.png" />
       <iframe
         src="https://open.spotify.com/follow/1/?uri=spotify:artist:22jVrO8Tojt0l3OIEd460N&size=detail&theme=light"
         width="300"
@@ -23,6 +22,7 @@ const Home = () => {
         style={{border: 'none', overflow: 'hidden'}}
         allowtransparency="true"
       />{' '}
+      <img id="home-image" src="https://losdel21.herokuapp.com/album.png" />
     </div>
   )
 }
